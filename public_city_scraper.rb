@@ -37,6 +37,7 @@ def scrape_mail(mairies_urls)
     end
     mairies_mails << mail
   end
+  p mairies_mails
 end
 
 scrape_urls
