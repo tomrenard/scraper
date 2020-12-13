@@ -48,7 +48,10 @@ def scrape_sem(sem_links)
     lang2 = doc.css(".details>:nth-child(5)").text
     if_timer.empty? ? lang = lang1 : lang = lang2
 
-    p lang
+    description = doc.css(".description-text").text
+    pros = doc.css(".card-body>p").text
+
+    p pros
   end
 end
 
