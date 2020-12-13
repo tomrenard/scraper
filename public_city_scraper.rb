@@ -17,8 +17,8 @@ def scrape_urls
       url = mairie.attribute('href').value
       mairies_urls << url
     end
-    scrape_mail(mairies_urls)
   end
+  scrape_mail(mairies_urls)
 end
 
 def scrape_mail(mairies_urls)
