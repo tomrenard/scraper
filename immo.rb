@@ -9,8 +9,8 @@ url = 'https://fr.riviera-realisation.com/espace-reserve'
 page = agent.get(url)
 agent.user_agent_alias = 'Mac Safari'
 form_name = page.forms[1]
-form_name.account = "3113"
-form_name.password = "o8-|2}79"
+form_name.account = ""
+form_name.password = ""
 button = form_name.button
 test1 = form_name.submit
 p test1
