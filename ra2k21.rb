@@ -51,15 +51,15 @@ def scrape_event_content(events_urls)
     title2 = doc.css('.Text-sc-1t0gn2o-0.llxwqv').text.gsub("\n", '').gsub("\r", '')
     address = doc.css('.Grid__GridStyled-sc-1l00ugd-0.hTDtOT.grid').css('.Text-sc-1t0gn2o-0.dhoduX').first.text.gsub("\n", '').gsub("\r", '')
     starting_date = doc.css('.Text-sc-1t0gn2o-0.Link__StyledLink-k7o46r-0.hvqKqA').last.text.gsub("\n", '').gsub("\r", '')
-    line_up = doc.css('.Text-sc-1t0gn2o-0.CmsContent__StyledText-g7gf78-0').text.gsub("\n", ' ').gsub("\r", ' ')
+    line_up = doc.css('.Text-sc-1t0gn2o-0.CmsContent__StyledText-g7gf78-0').text.gsub("\n", '').gsub("\r", '')
     promoter = doc.css('.Text-sc-1t0gn2o-0.dhoduX').slice(4).text.gsub("\n", '').gsub("\r", '')
     price = doc.css('.Text-sc-1t0gn2o-0.dhoduX').last.text
-    description = doc.css('.Text-sc-1t0gn2o-0.EventDescription__BreakText-a2vzlh-0.hPALEa').text.gsub("\n", '').gsub("\r", '')
-    img_urls  = []
+    descript = doc.css('.Text-sc-1t0gn2o-0.EventDescription__BreakText-a2vzlh-0.hPALEa').text.gsub("\n", '').gsub("\r", '')
+    img_urls = []
     img_links = doc.css('.FullWidthStyle-sc-4b98ap-0.htnFjY>img')
     img_links.each do |img_link|
       img_url = img_link.attribute('src').value
-      img_urls << "#{img_url}"
+      img_urls << img_url.to_s
     end
     event_info = {
       location: address,
@@ -68,8 +68,9 @@ def scrape_event_content(events_urls)
       promoter: promoter,
       price: price
     }
+    desc_stg = 'Oups, looks like the description is secret or someone was lazy here...'
     img_urls[0].nil? ? event_info[:photo_link] = 'https://source.unsplash.com/featured/?nightclub' : event_info[:photo_link] = img_urls[0]
-    description == '' ? event_info[:description] = 'Oups, looks like the description is secret or someone was lazy here...' : event_info[:description] = description
+    descript == '' ? event_info[:descript] = desc_stg.to_s : event_info[:descript] = descript
     title.nil? || title == '' ? event_info[:title] = title2 : event_info[:title] = title
     events << event_info
     p events
