@@ -5,9 +5,9 @@ require 'webdrivers'
 
 def scrape_location
   urls = []
-  locations = ['de/berlin', 'es/barcelona', 'uk/london', 'us/newyork', 'nl/amsterdam', 'jp/tokyo',
-    'us/losangeles', 'us/miami', 'es/ibiza', 'pt/lisbon', 'ie/dublin']
-
+  locations = ['de/berlin', 'fr/paris', 'fr/west', 'es/barcelona', 'uk/london', 'us/newyork', 'nl/amsterdam',
+  'jp/tokyo', 'us/losangeles', 'uk/manchester', 'ca/montreal', 'ru/moscow', 'us/miami', 'es/ibiza', 'de/leipzig',
+  'pt/lisbon', 'ie/dublin']
   locations.each do |location|
     date = Date.today
     dates = [date, date + 7, date + 14, date + 21]
@@ -61,7 +61,6 @@ def scrape_event_content(events_urls)
       img_url = img_link.attribute('src').value
       img_urls << "#{img_url}"
     end
-
     event_info = {
       location: address,
       date: starting_date,
@@ -69,11 +68,9 @@ def scrape_event_content(events_urls)
       promoter: promoter,
       price: price
     }
-
     img_urls[0].nil? ? event_info[:photo_link] = 'https://source.unsplash.com/featured/?nightclub' : event_info[:photo_link] = img_urls[0]
     description == '' ? event_info[:description] = 'Oups, looks like the description is secret or someone was lazy here...' : event_info[:description] = description
     title.nil? || title == '' ? event_info[:title] = title2 : event_info[:title] = title
-
     events << event_info
     p events
   end
