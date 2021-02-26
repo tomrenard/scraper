@@ -47,14 +47,12 @@ def scrape_event_content(events_urls)
     title2 = doc.css('.Text-sc-1t0gn2o-0.llxwqv').text.gsub("\n", '').gsub("\r", '')
     address = doc.css('.Grid__GridStyled-sc-1l00ugd-0.hTDtOT.grid').css('.Text-sc-1t0gn2o-0.dhoduX').first.text.gsub("\n", '').gsub("\r", '')
     start_date = doc.css('.Text-sc-1t0gn2o-0.Link__StyledLink-k7o46r-0.hvqKqA').last.text.gsub("\n", '').gsub("\r", '')
-    info_st_h = doc.css('.Text-sc-1t0gn2o-0.dhoduX').slice(1).text
+    start_h = doc.css('.Text-sc-1t0gn2o-0.dhoduX').slice(1).text
+    end_h = doc.css('.Text-sc-1t0gn2o-0.dhoduX').slice(3).text
     reg_h = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/
-    start_h = info_st_h.match(reg_h)[0]
-    info_end_h = doc.css('.Text-sc-1t0gn2o-0.dhoduX').slice(3).text
-    end_h = info_end_h.match(reg_h)[0]
-    line_up = doc.css('.Text-sc-1t0gn2o-0.CmsContent__StyledText-g7gf78-0').text.gsub("\n", '').gsub("\r", '') #not_correct
+    # line_up = doc.css('.Text-sc-1t0gn2o-0.CmsContent__StyledText-g7gf78-0').text.gsub("\n", '').gsub("\r", '') #not reliable
     prom = doc.css('.Text-sc-1t0gn2o-0.dhoduX').slice(4).text.gsub("\n", '').gsub("\r", '')
-    price = doc.css('.Text-sc-1t0gn2o-0.dhoduX').last.text
+    # price = doc.css('.Text-sc-1t0gn2o-0.dhoduX').last.text #not reliable
     description = doc.css('.Text-sc-1t0gn2o-0.EventDescription__BreakText-a2vzlh-0.hPALEa').text.gsub("\n", '').gsub("\r", '')
     img_urls = []
     img_links = doc.css('.FullWidthStyle-sc-4b98ap-0.htnFjY>img')
@@ -63,18 +61,19 @@ def scrape_event_content(events_urls)
       img_urls << img_url.to_s
     end
     event_info = {
-      title: title || title2,
-      location: address,
+      title: title.empty? ? title2 : title,
+      # location: location, #to do (club name etc.) #to do
+      adress: address,
       date: start_date,
-      start_h: start_h,
-      end_h: end_h,
-      line_up: line_up,
+      start_h: start_h.match(reg_h)[0],
+      end_h: end_h.match(reg_h)[0],
+      # line_up: line_up, #to redo, not reliable
       promoter: prom,
-      description: description || 'Oups, looks like the description is secret or someone was lazy here...',
-      photo_link: img_urls[0] || 'https://source.unsplash.com/featured/?nightclub',
-      price: price || 'You better take 15 bucks, just in case'
+      description: description.empty? || description.nil? ? 'Oups, looks like the description is secret or someone was lazy here...' : description,
+      photo_link: img_urls[0] || 'https://source.unsplash.com/featured/?nightclub'
+      # price: price.include?('monees') || price.empty? ? 'You better take 15 bucks, just in case' : price #to redo, not reliable
     }
-    events << event_info
+    events << event_info.uniq
     p events
   end
 end
