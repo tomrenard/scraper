@@ -30,11 +30,7 @@ def scrape_event_url(urls)
     clubs_urls = []
     links.each do |link|
       url = link.attribute('href').value
-      if url.include?('event')
-        events_urls << url
-      else
-        clubs_urls << url
-      end
+      url.include?('event') ? events_urls << url : clubs_urls << url
     end
     scrape_event_content(events_urls)
     browser.close
@@ -50,11 +46,16 @@ def scrape_event_content(events_urls)
     title = doc.css('.Text-sc-1t0gn2o-0.lYqGv').text.gsub("\n", '').gsub("\r", '')
     title2 = doc.css('.Text-sc-1t0gn2o-0.llxwqv').text.gsub("\n", '').gsub("\r", '')
     address = doc.css('.Grid__GridStyled-sc-1l00ugd-0.hTDtOT.grid').css('.Text-sc-1t0gn2o-0.dhoduX').first.text.gsub("\n", '').gsub("\r", '')
-    starting_date = doc.css('.Text-sc-1t0gn2o-0.Link__StyledLink-k7o46r-0.hvqKqA').last.text.gsub("\n", '').gsub("\r", '')
-    line_up = doc.css('.Text-sc-1t0gn2o-0.CmsContent__StyledText-g7gf78-0').text.gsub("\n", '').gsub("\r", '')
-    promoter = doc.css('.Text-sc-1t0gn2o-0.dhoduX').slice(4).text.gsub("\n", '').gsub("\r", '')
+    start_date = doc.css('.Text-sc-1t0gn2o-0.Link__StyledLink-k7o46r-0.hvqKqA').last.text.gsub("\n", '').gsub("\r", '')
+    info_st_h = doc.css('.Text-sc-1t0gn2o-0.dhoduX').slice(1).text
+    reg_h = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/
+    start_h = info_st_h.match(reg_h)[0]
+    info_end_h = doc.css('.Text-sc-1t0gn2o-0.dhoduX').slice(3).text
+    end_h = info_end_h.match(reg_h)[0]
+    line_up = doc.css('.Text-sc-1t0gn2o-0.CmsContent__StyledText-g7gf78-0').text.gsub("\n", '').gsub("\r", '') #not_correct
+    prom = doc.css('.Text-sc-1t0gn2o-0.dhoduX').slice(4).text.gsub("\n", '').gsub("\r", '')
     price = doc.css('.Text-sc-1t0gn2o-0.dhoduX').last.text
-    descript = doc.css('.Text-sc-1t0gn2o-0.EventDescription__BreakText-a2vzlh-0.hPALEa').text.gsub("\n", '').gsub("\r", '')
+    description = doc.css('.Text-sc-1t0gn2o-0.EventDescription__BreakText-a2vzlh-0.hPALEa').text.gsub("\n", '').gsub("\r", '')
     img_urls = []
     img_links = doc.css('.FullWidthStyle-sc-4b98ap-0.htnFjY>img')
     img_links.each do |img_link|
@@ -62,16 +63,17 @@ def scrape_event_content(events_urls)
       img_urls << img_url.to_s
     end
     event_info = {
+      title: title || title2,
       location: address,
-      date: starting_date,
+      date: start_date,
+      start_h: start_h,
+      end_h: end_h,
       line_up: line_up,
-      promoter: promoter,
-      price: price
+      promoter: prom,
+      description: description || 'Oups, looks like the description is secret or someone was lazy here...',
+      photo_link: img_urls[0] || 'https://source.unsplash.com/featured/?nightclub',
+      price: price || 'You better take 15 bucks, just in case'
     }
-    desc_stg = 'Oups, looks like the description is secret or someone was lazy here...'
-    img_urls[0].nil? ? event_info[:photo_link] = 'https://source.unsplash.com/featured/?nightclub' : event_info[:photo_link] = img_urls[0]
-    descript == '' ? event_info[:descript] = desc_stg.to_s : event_info[:descript] = descript
-    title.nil? || title == '' ? event_info[:title] = title2 : event_info[:title] = title
     events << event_info
     p events
   end
