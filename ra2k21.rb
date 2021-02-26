@@ -4,6 +4,20 @@ require 'watir'
 require 'webdrivers'
 
 def scrape_location
+  locations = []
+  browser = Watir::Browser.new
+  url = 'https://ra.co/events'
+  browser.goto(url)
+  sleep(8)
+  button = browser.button(data_button_tracking_id: 'open-location-filter-modal').click
+  p button
+  # html = (open(browser.url, ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE, 'User-Agent' => 'opera'))
+  # doc = Nokogiri::HTML(html)
+  # links = doc.css('Text-sc-1t0gn2o-0 ButtonLink___StyledText-sc-1q2y9dq-0.hwFgpW')
+  # p links
+end
+
+def generate_url(locations)
   urls = []
   locations = ['de/berlin', 'fr/paris', 'fr/west', 'es/barcelona', 'uk/london', 'us/newyork', 'nl/amsterdam',
   'jp/tokyo', 'us/losangeles', 'uk/manchester', 'ca/montreal', 'ru/moscow', 'us/miami', 'es/ibiza', 'de/leipzig',
