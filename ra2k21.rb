@@ -57,12 +57,11 @@ def scrape_event_content(events_urls)
     doc = Nokogiri::HTML(html)
     title = doc.css('.Text-sc-1t0gn2o-0.lYqGv').text.gsub("\n", '').gsub("\r", '')
     title2 = doc.css('.Text-sc-1t0gn2o-0.llxwqv').text.gsub("\n", '').gsub("\r", '')
+    location = doc.css('.Text-sc-1t0gn2o-0.Link__StyledLink-k7o46r-0.hvqKqA').first || 'Unknown location'
     ad = doc.css('.Grid__GridStyled-sc-1l00ugd-0.hTDtOT.grid').css('.Text-sc-1t0gn2o-0.dhoduX').first.text
     start_date = doc.css('.Text-sc-1t0gn2o-0.Link__StyledLink-k7o46r-0.hvqKqA').last.text.gsub("\n", '').gsub("\r", '')
     start_h = doc.css('.Text-sc-1t0gn2o-0.dhoduX').slice(1).text
     end_h = doc.css('.Text-sc-1t0gn2o-0.dhoduX').slice(3).text
-    reg_h = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/
-    location = doc.css('.Text-sc-1t0gn2o-0.Link__StyledLink-k7o46r-0.hvqKqA').first || 'Unknown location'
     line_up = doc.css('.Text-sc-1t0gn2o-0.CmsContent__StyledText-g7gf78-0').text.gsub("\n", '').gsub("\r", '') # warning
     prom = doc.css('.Text-sc-1t0gn2o-0.dhoduX').slice(4).text.gsub("\n", '').gsub("\r", '')
     age = doc.css('.Box-omzyfs-0.kXpspU>span').text.include?('ageD')
@@ -75,10 +74,11 @@ def scrape_event_content(events_urls)
       img_urls << img_url.to_s
     end
     desc_stg = 'Oups, looks like the description is secret or someone was lazy here...'
+    reg_h = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/
     event_info = {
       title: title.empty? ? title2 : title,
       location: location.text,
-      adress: ad.gsub("\r", '').gsub("\n", ''),
+      address: ad.gsub("\r", '').gsub("\n", ''),
       date: start_date,
       start_h: start_h.match(reg_h)[0],
       end_h: end_h.match(reg_h)[0],
@@ -89,7 +89,6 @@ def scrape_event_content(events_urls)
       price: price
     }
     events << event_info.uniq
-    p events
   end
 end
 
